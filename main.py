@@ -8,7 +8,6 @@ from computer import comp
 tracker = EuclideanDistTracker()
 
 cap = cv2.VideoCapture(0)
-
 object_detector = cv2.createBackgroundSubtractorMOG2(history=100, varThreshold=40)
 
 dist=[]
@@ -19,10 +18,11 @@ while True:
     
     #TODO: Check the height and width of your frame and put it in line 26
     height, width, _ = frame.shape
-    print("Manish",height,width)
-    time.delay(5)
+    print("Anubhav",height,width)
+    time.sleep(0.01)
     
-    roi = frame[0:352,150: 360]
+    roi = frame[0:480,200: 500]
+
 
     
     
@@ -38,7 +38,7 @@ while True:
         print(area) #TODO: check the area of your bot and accordingly set the if condition
         
         
-        if area > 10000:
+        if area > 5000:
             
             x, y, w, h = cv2.boundingRect(cnt)
             cv2.rectangle(roi,(x,y),(x+w,y+h),(230,45,189))     
@@ -48,43 +48,44 @@ while True:
     for box_id in boxes_ids:
         x, y, w, h, id = box_id
         
-        if id==0:
-            cv2.putText(roi, str(id), (x, y - 15), cv2.FONT_HERSHEY_PLAIN, 2, (255, 0, 0), 5)
-            cv2.rectangle(roi, (x, y), (x + w, y + h), (0, 255, 0), 3)
-            cofbot=((x+w//2),(y+h//2))
-            cv2.circle(roi,cofbot,3,(0,0,255),-1)
-            endpnt=(300,20)
-            cv2.circle(roi,endpnt,7,(0,0,255),-1)
-          
+        # if id==0:
+        cv2.putText(roi, str(id), (x, y - 15), cv2.FONT_HERSHEY_PLAIN, 2, (255, 0, 0), 5)
+        cv2.rectangle(roi, (x, y), (x + w, y + h), (0, 255, 0), 3)
+        cofbot=((x+w//2),(y+h//2))
+        cv2.circle(roi,cofbot,3,(0,0,255),-1)
+        endpnt=(480,20)
+        cv2.circle(roi,endpnt,7,(0,0,255),-1)
 
-            xy=utils.std(cofbot,endpnt)
-            cv2.circle(roi,xy,5,(0,0,255),-1)
-            cv2.line(roi,cofbot,xy,(122,122,210),7)
-            cv2.line(roi,xy,endpnt,(122,122,10),7)
 
-            dist1=utils.dist(cofbot,xy)
-            dist2=utils.dist(xy,endpnt)
-            '''
-            0-> stop
-            1 -> forward
-            2 -> right
-            3-> left
-            '''
-            if dist:
-                if(dist1<=5):
-                    print(dist1)
-                    print("stop")
-                    comp(0)
-                elif(dist1<dist[-1]):
-                    dist.append(dist1)
-                    print("forward")
-                    comp(1)
-            else:
-                dist.append(dist1)
+        xy=utils.std(cofbot,endpnt)
+        cv2.circle(roi,xy,5,(0,0,255),-1)
+        cv2.line(roi,cofbot,xy,(122,122,210),7)
+        cv2.line(roi,xy,endpnt,(122,122,10),7)
+
+        dist1=utils.dist(cofbot,xy)
+        dist2=utils.dist(xy,endpnt)
+        '''
+        0-> stop
+        1 -> forward
+        2 -> right
+        3-> left
+        '''
+        if dist:
+            if(dist1<=5):
                 print(dist1)
+                print("stop")
+                comp(0)
+            elif(dist1<dist[-1]):
+                dist.append(dist1)
+                print("forward")
+                comp(1)
+        else:
+            dist.append(dist1)
+            print(dist1)
     if ret:
         cv2.imshow("Frame", frame)
-       
+        cv2.imshow("ROI", roi)
+        cv2.imshow("Mask", mask)
 
     if cv2.waitKey(1) & 0xff == ord('q'):
         break
